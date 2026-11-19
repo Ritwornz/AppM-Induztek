@@ -40,6 +40,7 @@ import cl.duocuc.induztektrabajo.model.TipoPrueba
 import cl.duocuc.induztektrabajo.model.calcularErrorTtr
 import cl.duocuc.induztektrabajo.model.calcularIP
 import cl.duocuc.induztektrabajo.ui.components.BotonVolverFlecha
+import cl.duocuc.induztektrabajo.ui.theme.NaranjaInduztek
 import cl.duocuc.induztektrabajo.viewmodel.RegistroUiState
 import java.util.Locale
 
@@ -351,9 +352,15 @@ fun RegistroPruebasScreen(
                         fotoPruebaLocal = null
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = NaranjaInduztek,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+
             ) {
                 Text("Guardar prueba", fontWeight = FontWeight.Bold)
+
             }
 
         }

@@ -29,7 +29,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duocuc.induztektrabajo.viewmodel.RegistroViewModel
 import kotlinx.coroutines.launch
 
-private enum class Destino { LOGIN, INICIO, REGISTRO, RESUMEN, RECEPCION, PERFIL, DASHBOARD }
+private enum class Destino {
+    LOGIN,
+    INICIO,
+    REGISTRO,
+    REGISTRO_USUARIO,
+    RESUMEN,
+    RECEPCION,
+    PERFIL,
+    DASHBOARD
+}
 
 @Composable
 fun InduztekApp() {
@@ -65,6 +74,9 @@ fun InduztekApp() {
             medicionDao = db.medicionDao(),
             protocoloDao = db.protocoloDao()
         )
+    }
+    val registroUsuarioViewModel = remember {
+        cl.duocuc.induztektrabajo.viewmodel.RegistroUsuarioViewModel(db.usuarioDao())
     }
 
 
@@ -138,13 +150,23 @@ fun InduztekApp() {
                         onSuccess = { destino = Destino.INICIO }
                     )
                 },
-                onRecuperarContrasena = {
+                onRecuperarContrasena = { },
+                onConfirmarRecuperacion = { correo, nuevaClave, onResultado ->
                     scope.launch {
-                        snackbar.showSnackbar("Recuperación disponible al conectar el servidor")
+                        val resultado = loginViewModel.restablecerContrasena(correo, nuevaClave)
+                        if (resultado.isSuccess) {
+                            snackbar.showSnackbar("Contraseña restablecida con éxito. Inicia sesión.")
+                            onResultado(true, null)
+                        } else {
+                            onResultado(false, resultado.exceptionOrNull()?.message)
+                        }
                     }
                 },
+                onIrARegistro = { destino = Destino.REGISTRO_USUARIO },
                 modifier = Modifier.padding(innerPadding)
             )
+
+
 
             Destino.INICIO -> InicioScreen(
                 estado = estadoInicio,
@@ -299,17 +321,26 @@ fun InduztekApp() {
                     }
                 )
             }
+                    Destino.REGISTRO_USUARIO -> {
+                    cl.duocuc.induztektrabajo.ui.screens.RegistroUsuarioScreen(
+                        viewModel = registroUsuarioViewModel,
+                        onVolverAlLogin = { destino = Destino.LOGIN },
+                        onRegistroExitoso = {
+                            destino = Destino.LOGIN
+                            scope.launch {
+                                snackbar.showSnackbar("Cuenta creada con éxito. Inicia sesión.")
+                            }
+                        }
+                    )
+                }
 
-
-
-
-            Destino.DASHBOARD -> {
-                DashboardScreen(
-                    protocolos = estadoInicio.todos,
-                    rolUsuario = datosUsuario?.rol ?: "",
-                    onVolver = { destino = Destino.INICIO }
-                )
-            }
+                Destino.DASHBOARD -> {
+                    DashboardScreen(
+                        protocolos = estadoInicio.todos,
+                        rolUsuario = datosUsuario?.rol ?: "",
+                        onVolver = { destino = Destino.INICIO }
+                    )
+                }
         }
     }
 }

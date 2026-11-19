@@ -68,8 +68,6 @@ class LoginViewModel(
                         nombre = usuario.nombreCompleto,
                         rol = usuario.rol
                     )
-
-
                     _uiState.update { it.copy(cargando = false) }
                     onSuccess()
                 } else {
@@ -90,4 +88,22 @@ class LoginViewModel(
             }
         }
     }
+    suspend fun restablecerContrasena(
+        correo: String,
+        nuevaClave: String
+    ): Result<Unit> {
+        return try {
+            val usuario = usuarioDao.buscarPorCorreo(correo.trim())
+            if (usuario == null) {
+                Result.failure(Exception("No existe ninguna cuenta asociada a este correo."))
+            } else {
+                val nuevoHash = cl.duocuc.induztektrabajo.data.security.PasswordHasher.hashPassword(nuevaClave)
+                usuarioDao.actualizarPasswordPorCorreo(correo.trim(), nuevoHash)
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Error al actualizar la contraseña: ${e.message}"))
+        }
+    }
+
 }

@@ -10,6 +10,7 @@ import cl.duocuc.induztektrabajo.model.ProtocoloResumen
 import cl.duocuc.induztektrabajo.model.RepositorioFicticio
 import cl.duocuc.induztektrabajo.model.filtrarProtocolos
 import cl.duocuc.induztektrabajo.model.siguienteNumeroProtocolo
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,18 +45,34 @@ class InicioViewModel(
     )
     val uiState: StateFlow<InicioUiState> = _uiState.asStateFlow()
 
+    private var jobObservador: Job? = null
+
     init {
-        observarProtocolos()
+        // Carga inicial por defecto
+        cargarProtocolos(rol = null, nombreCompleto = null)
     }
 
-    private fun observarProtocolos() {
-        viewModelScope.launch {
-            protocoloDao.obtenerTodosLosProtocolos().collectLatest { entidades ->
+    fun cargarProtocolos(rol: String?, nombreCompleto: String?) {
+        jobObservador?.cancel()
+        jobObservador = viewModelScope.launch {
+            val flujo = if (rol == "CLIENTE" && !nombreCompleto.isNullOrBlank()) {
+                // Extrae la empresa dentro del paréntesis, ej: "Juan Pérez (Minera Andes Norte)" -> "Minera Andes Norte"
+                val empresa = if (nombreCompleto.contains("(") && nombreCompleto.contains(")")) {
+                    nombreCompleto.substringAfter("(").substringBefore(")").trim()
+                } else {
+                    nombreCompleto.trim()
+                }
+                protocoloDao.obtenerProtocolosPorCliente(empresa)
+            } else {
+                // TÉCNICO y ADMINISTRADOR ven todos los protocolos
+                protocoloDao.obtenerTodosLosProtocolos()
+            }
+
+            flujo.collectLatest { entidades ->
                 val listaResumenes = entidades.map { entidad ->
                     val fechaStr = SimpleDateFormat("dd/MM/yyyy", Locale("es", "CL")).format(Date(entidad.fechaRegistro))
                     val equipoAsociado = RepositorioFicticio.equipos.find { it.tag == entidad.tagEquipo }
                         ?: RepositorioFicticio.equipos.first()
-
 
                     val estadoEnum = try {
                         EstadoProtocolo.valueOf(entidad.estado)

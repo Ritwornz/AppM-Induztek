@@ -36,3 +36,4 @@ val TextoClaro = TextoOscuroPrincipal
 val GrisDeshabilitado = BordeClaro
 val Exito = VerdeEstado
 val ExitoFondo = Color(0xFFE2F4E8)
+val Azul = Color(0xFF0036B2)

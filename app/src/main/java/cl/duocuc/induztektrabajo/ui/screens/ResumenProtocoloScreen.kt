@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,8 @@ import cl.duocuc.induztektrabajo.ui.components.BotonVolverFlecha
 import cl.duocuc.induztektrabajo.util.Ubicacion
 import cl.duocuc.induztektrabajo.viewmodel.ResumenUiState
 import cl.duocuc.induztektrabajo.model.EstadoProtocolo
+import cl.duocuc.induztektrabajo.ui.theme.Azul
+import cl.duocuc.induztektrabajo.ui.theme.NaranjaInduztek
 import java.util.Locale
 
 private fun colorResultado(r: ResultadoPrueba): Color = when (r) {
@@ -85,6 +88,7 @@ fun ResumenProtocoloScreen(
             onUbicacionObtenida(loc.latitude, loc.longitude)
         }
     }
+
 
     LazyColumn(
         modifier = modifier
@@ -188,7 +192,12 @@ fun ResumenProtocoloScreen(
                         if (!esCliente) {
                             Button(
                                 onClick = onRegistrarRecepcion,
-                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = NaranjaInduztek,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+
                             ) {
                                 Text("Registrar recepción del acta", fontWeight = FontWeight.Bold)
                             }
@@ -245,7 +254,12 @@ fun ResumenProtocoloScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = NaranjaInduztek,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+
                         ) {
                             Text("Registrar ubicación de la visita")
                         }
@@ -256,7 +270,14 @@ fun ResumenProtocoloScreen(
 
         if (p.estado.puedeEditarPruebas() && !esCliente) {
             item {
-                OutlinedButton(onClick = onVolverPruebas, modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(onClick = onVolverPruebas,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = NaranjaInduztek,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+
+                ) {
                     Text("Volver a pruebas")
                 }
             }
@@ -264,6 +285,7 @@ fun ResumenProtocoloScreen(
 
     }
 }
+
 
 @Composable
 private fun TarjetaResumenPrueba(r: RegistroPrueba) {

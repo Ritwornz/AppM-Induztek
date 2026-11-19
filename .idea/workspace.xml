@@ -22,13 +22,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2618f0aa-c6dd-4c3c-b0da-d9cb391f6e6f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/appInsightsSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/RegistroUsuarioScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/RegistroUsuarioViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/InduztekApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/InduztekApp.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/model/Usuario.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/components/TarjetaSeccion.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/components/TarjetaSeccion.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/PerfilScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/PerfilScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/data/local/dao/ProtocoloDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/data/local/dao/ProtocoloDao.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/DashboardScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/LoginScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/LoginScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/RecepcionActaScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/RecepcionActaScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/RegistroPruebasScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/RegistroPruebasScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/ResumenProtocoloScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/screens/ResumenProtocoloScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/ui/theme/Color.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/InicioViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/InicioViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/LoginViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/RegistroViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/cl/duocuc/induztektrabajo/viewmodel/RegistroViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +88,9 @@
   &quot;fromUser&quot;: false
 }</component>
   <component name="ProjectId" id="3KKxR6fHm93li56EzlBfok4HRcA" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -95,26 +110,95 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Angel/Documents/InduztekTrabajo"
+    "last_opened_file_path": "C:/Users/Angel/Pictures/InduztekTrabajo"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
       <recent name="cl.duocuc.induztektrabajo.ui.screens" />
+      <recent name="cl.duocuc.induztektrabajo.ui.theme" />
       <recent name="cl.duocuc.induztektrabajo" />
       <recent name="cl.duocuc.induztektrabajo.viewmodel" />
       <recent name="cl.duocuc.InduztekTrabajo.ui.theme" />
-      <recent name="cl.duocuc.miregistro.ui.components" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.MainActivity (1)">
+  <component name="RunManager" selected="Android App.MainActivity (4)">
     <configuration name="MainActivity (1)" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" temporary="true">
+      <module name="InduztekTrabajo.app" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="specific_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Trace" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="cl.duocuc.induztektrabajo.MainActivity" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MainActivity (2)" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" temporary="true">
       <module name="InduztekTrabajo.app" />
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -378,72 +462,6 @@
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MainActivity" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" temporary="true">
-      <module name="InduztekTrabajo.app" />
-      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
-      <option name="DEPLOY" value="true" />
-      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
-      <option name="DEPLOY_AS_INSTANT" value="false" />
-      <option name="ARTIFACT_NAME" value="" />
-      <option name="PM_INSTALL_OPTIONS" value="" />
-      <option name="ALL_USERS" value="false" />
-      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
-      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
-      <option name="CLEAR_APP_STORAGE" value="false" />
-      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
-      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
-      <option name="MODE" value="specific_activity" />
-      <option name="RESTORE_ENABLED" value="false" />
-      <option name="RESTORE_FILE" value="" />
-      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-      </Hybrid>
-      <Java>
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-      </Java>
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-      </Native>
-      <Profilers>
-        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Trace" />
-        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
-        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
-      </Profilers>
-      <option name="DEEP_LINK" value="" />
-      <option name="ACTIVITY" value="" />
-      <option name="ACTIVITY_CLASS" value="cl.duocuc.induztektrabajo.MainActivity" />
-      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
-      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
-      <method v="2">
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="InduztekTrabajo.app" />
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
@@ -512,11 +530,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Android App.MainActivity (1)" />
-        <item itemvalue="Android App.MainActivity" />
         <item itemvalue="Android App.MainActivity (4)" />
         <item itemvalue="Android App.MainActivity (5)" />
         <item itemvalue="Android App.MainActivity (3)" />
+        <item itemvalue="Android App.MainActivity (2)" />
+        <item itemvalue="Android App.MainActivity (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -535,12 +553,12 @@
       <map>
         <entry key="cl.duocuc.induztektrabajo">
           <value>
-            <CheckInfo lastCheckTimestamp="1793095987174" />
+            <CheckInfo lastCheckTimestamp="1795041550823" />
           </value>
         </entry>
         <entry key="cl.duocuc.induztektrabajo.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1793095987178" />
+            <CheckInfo lastCheckTimestamp="1795041550821" />
           </value>
         </entry>
         <entry key="cl.duocuc.miregistro">

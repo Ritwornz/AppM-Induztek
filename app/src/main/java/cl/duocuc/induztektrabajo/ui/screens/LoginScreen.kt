@@ -25,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,11 +59,17 @@ fun LoginScreen(
     onAlternarContrasena: () -> Unit,
     onIngresar: () -> Unit,
     onRecuperarContrasena: () -> Unit,
+    onIrARegistro: () -> Unit = {},
+    onConfirmarRecuperacion: (correo: String, nuevaClave: String, onResultado: (Boolean, String?) -> Unit) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var mostrarDialogoRecuperacion by remember { mutableStateOf(false) }
     var correoRecuperacion by remember { mutableStateOf("") }
+    var nuevaClaveRecuperacion by remember { mutableStateOf("") }
+    var confirmarClaveRecuperacion by remember { mutableStateOf("") }
+    var pasoRecuperacion by remember { mutableStateOf(1) } // 1: Pedir correo, 2: Nueva clave
     var mensajeFeedback by remember { mutableStateOf<String?>(null) }
+
 
     Box(
         modifier = modifier
@@ -90,6 +95,12 @@ fun LoginScreen(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
+            Text(
+                text = "Ingresa tus credenciales para acceder",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             Spacer(Modifier.height(28.dp))
 
             OutlinedTextField(
@@ -111,6 +122,7 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(6.dp)
             )
+
             Spacer(Modifier.height(12.dp))
 
             OutlinedTextField(
@@ -199,15 +211,10 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(54.dp)
                     .animateContentSize(),
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                shape = RoundedCornerShape(6.dp)
             ) {
                 if (estado.cargando) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp
                     )
@@ -215,34 +222,77 @@ fun LoginScreen(
                     Text("INGRESAR")
                 }
             }
+            Spacer(Modifier.height(16.dp))
+
+            TextButton(
+                onClick = onIrARegistro
+            ) {
+                Text(
+                    text = "¿No tienes cuenta? Regístrate aquí",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 
     if (mostrarDialogoRecuperacion) {
         AlertDialog(
-            onDismissRequest = { mostrarDialogoRecuperacion = false },
-            title = { Text("Recuperar contraseña") },
+            onDismissRequest = {
+                mostrarDialogoRecuperacion = false
+                pasoRecuperacion = 1
+                mensajeFeedback = null
+            },
+            title = {
+                Text(if (pasoRecuperacion == 1) "Recuperar contraseña" else "Nueva contraseña")
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        "Ingresa tu correo institucional para recibir el enlace de restablecimiento:",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    OutlinedTextField(
-                        value = correoRecuperacion,
-                        onValueChange = {
-                            correoRecuperacion = it
-                            mensajeFeedback = null
-                        },
-                        label = { Text("Correo institucional") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(6.dp)
-                    )
+                    if (pasoRecuperacion == 1) {
+                        Text(
+                            "Ingresa tu correo institucional registrado para validar tu cuenta:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        OutlinedTextField(
+                            value = correoRecuperacion,
+                            onValueChange = {
+                                correoRecuperacion = it
+                                mensajeFeedback = null
+                            },
+                            label = { Text("Correo institucional") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                    } else {
+                        Text(
+                            "Cuenta verificada para $correoRecuperacion. Ingresa tu nueva contraseña:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        OutlinedTextField(
+                            value = nuevaClaveRecuperacion,
+                            onValueChange = { nuevaClaveRecuperacion = it },
+                            label = { Text("Nueva contraseña") },
+                            singleLine = true,
+                            visualTransformation = PasswordVisualTransformation(),
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        OutlinedTextField(
+                            value = confirmarClaveRecuperacion,
+                            onValueChange = { confirmarClaveRecuperacion = it },
+                            label = { Text("Confirmar nueva contraseña") },
+                            singleLine = true,
+                            visualTransformation = PasswordVisualTransformation(),
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                    }
+
                     if (mensajeFeedback != null) {
                         Text(
                             text = mensajeFeedback!!,
-                            color = if (mensajeFeedback!!.startsWith("Error")) {
+                            color = if (mensajeFeedback!!.startsWith("Error") || mensajeFeedback!!.startsWith("No existe")) {
                                 MaterialTheme.colorScheme.error
                             } else {
                                 MaterialTheme.colorScheme.primary
@@ -255,19 +305,45 @@ fun LoginScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        if (correoRecuperacion.isBlank() || !correoRecuperacion.contains("@")) {
-                            mensajeFeedback = "Error: Ingrese un correo electrónico válido."
+                        if (pasoRecuperacion == 1) {
+                            if (correoRecuperacion.isBlank() || !correoRecuperacion.contains("@")) {
+                                mensajeFeedback = "Error: Ingrese un correo electrónico válido."
+                            } else {
+                                mensajeFeedback = null
+                                pasoRecuperacion = 2
+                            }
                         } else {
-                            mensajeFeedback = "Instrucciones enviadas exitosamente a $correoRecuperacion"
+                            if (nuevaClaveRecuperacion.length < 6) {
+                                mensajeFeedback = "Error: La contraseña debe tener al menos 6 caracteres."
+                            } else if (nuevaClaveRecuperacion != confirmarClaveRecuperacion) {
+                                mensajeFeedback = "Error: Las contraseñas no coinciden."
+                            } else {
+                                onConfirmarRecuperacion(correoRecuperacion, nuevaClaveRecuperacion) { exito, error ->
+                                    if (exito) {
+                                        mostrarDialogoRecuperacion = false
+                                        pasoRecuperacion = 1
+                                        nuevaClaveRecuperacion = ""
+                                        confirmarClaveRecuperacion = ""
+                                    } else {
+                                        mensajeFeedback = error ?: "Error al actualizar contraseña"
+                                    }
+                                }
+                            }
                         }
                     }
                 ) {
-                    Text("Enviar")
+                    Text(if (pasoRecuperacion == 1) "Continuar" else "Restablecer")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { mostrarDialogoRecuperacion = false }) {
-                    Text("Cerrar")
+                TextButton(
+                    onClick = {
+                        mostrarDialogoRecuperacion = false
+                        pasoRecuperacion = 1
+                        mensajeFeedback = null
+                    }
+                ) {
+                    Text("Cancelar")
                 }
             }
         )

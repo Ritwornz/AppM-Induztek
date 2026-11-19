@@ -69,6 +69,8 @@ fun RecepcionActaScreen(
     var fotoLocal by remember { mutableStateOf<Bitmap?>(estado.fotoEvidencia) }
     val fotoFinal = fotoLocal ?: estado.fotoEvidencia
 
+
+
     // Sincroniza fecha inicial al ViewModel una vez
     LaunchedEffect(Unit) {
         if (estado.fechaRecepcion.isBlank()) {

@@ -203,6 +203,7 @@ class RegistroViewModel(
                     error = null
                 )
             }
+            
         }
     }
 }

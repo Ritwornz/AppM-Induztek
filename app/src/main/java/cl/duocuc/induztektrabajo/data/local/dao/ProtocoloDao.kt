@@ -19,6 +19,7 @@ interface ProtocoloDao {
     @Query("SELECT * FROM protocolos WHERE numero = :numero LIMIT 1")
     suspend fun obtenerProtocoloPorNumero(numero: String): ProtocoloEntity?
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarProtocolo(protocolo: ProtocoloEntity)
 

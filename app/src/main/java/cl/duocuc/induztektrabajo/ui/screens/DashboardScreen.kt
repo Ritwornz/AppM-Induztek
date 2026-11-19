@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -58,6 +59,7 @@ fun DashboardScreen(
 ) {
     // Si es cliente, solo ve los de Minera y sin BORRADOR (RN-18 y RN-19)
     val esCliente = rolUsuario.contains("Cliente", ignoreCase = true)
+
 
     val protocolosFiltrados = if (esCliente) {
         protocolos.filter {
