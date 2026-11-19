@@ -87,6 +87,14 @@ fun InduztekApp() {
         }
     }
 
+    LaunchedEffect(datosUsuario) {
+        inicioViewModel.cargarProtocolos(
+            rol = datosUsuario?.rol,
+            nombreCompleto = datosUsuario?.nombre
+        )
+    }
+
+
     // Sincroniza el protocolo actual si cambia de número
     LaunchedEffect(protocoloActualNumero, estadoInicio.todos, destino) {
         val numero = protocoloActualNumero ?: return@LaunchedEffect
@@ -241,19 +249,59 @@ fun InduztekApp() {
             )
 
             Destino.PERFIL -> {
+                val usuarioActual = datosUsuario
+                val nombre = usuarioActual?.nombre ?: "Carlos Sánchez"
+                val empresa = if (nombre.contains("(") && nombre.contains(")")) {
+                    nombre.substringAfter("(").substringBefore(")").trim()
+                } else {
+                    "Induztek Ingeniería"
+                }
+
                 PerfilScreen(
-                    nombreUsuario = datosUsuario?.nombre ?: "Carlos Sánchez",
-                    correoUsuario = datosUsuario?.correo ?: "carlos.sanchez@induztek.cl",
-                    rolUsuario = if (datosUsuario?.rol == "CLIENTE") "Cliente supervisor" else "Técnico de terreno",
-                    empresaUsuario = if (datosUsuario?.rol == "CLIENTE") "Minera Escondida" else "Induztek SpA",
+                    nombreUsuario = nombre,
+                    correoUsuario = usuarioActual?.correo ?: "carlos.sanchez@induztek.cl",
+                    rolUsuario = when (usuarioActual?.rol) {
+                        "ADMINISTRADOR" -> "Administrador"
+                        "CLIENTE" -> "Cliente supervisor"
+                        else -> "Técnico de terreno"
+                    },
+                    empresaUsuario = empresa,
                     onVolver = { destino = Destino.INICIO },
                     onCerrarSesion = {
                         scope.launch { sesionStore.cerrarSesion() }
                         protocoloActualNumero = null
                         destino = Destino.LOGIN
+                    },
+                    onGuardarNombre = { nuevoNombre ->
+                        val correo = usuarioActual?.correo
+                        val idUsuario = usuarioActual?.id ?: 1
+                        val rolUsuario = usuarioActual?.rol ?: "TECNICO"
+                        if (correo != null) {
+                            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                                db.usuarioDao().actualizarNombrePorCorreo(correo, nuevoNombre)
+                                sesionStore.guardarSesion(
+                                    id = idUsuario,
+                                    correo = correo,
+                                    nombre = nuevoNombre,
+                                    rol = rolUsuario
+                                )
+                            }
+                        }
+                    },
+                    onCambiarPassword = { nuevaClave ->
+                        val correo = usuarioActual?.correo
+                        if (correo != null) {
+                            val nuevoHash = cl.duocuc.induztektrabajo.data.security.PasswordHasher.hashPassword(nuevaClave)
+                            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                                db.usuarioDao().actualizarPasswordPorCorreo(correo, nuevoHash)
+                            }
+                        }
                     }
                 )
             }
+
+
+
 
             Destino.DASHBOARD -> {
                 DashboardScreen(

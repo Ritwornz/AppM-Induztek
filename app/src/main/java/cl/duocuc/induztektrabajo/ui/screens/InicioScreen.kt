@@ -64,7 +64,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import cl.duocuc.induztektrabajo.ui.theme.NaranjaInduztek
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,6 +88,12 @@ fun InicioScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var mostrarBandejaNotificaciones by remember { mutableStateOf(false) }
+
+    val empresaUsuario = if (nombreUsuario.contains("(") && nombreUsuario.contains(")")) {
+        nombreUsuario.substringAfter("(").substringBefore(")").trim()
+    } else {
+        nombreUsuario
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -163,7 +171,9 @@ fun InicioScreen(
                     label = { Text("Protocolos de prueba") },
                     selected = true,
                     onClick = { scope.launch { drawerState.close() } },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+
+
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
@@ -214,6 +224,7 @@ fun InicioScreen(
             }
         }
     ) {
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -239,16 +250,19 @@ fun InicioScreen(
                         // Solo el cliente supervisor ve la campana de notificaciones de protocolos formalizados
                         val esCliente = rolUsuario == "Cliente supervisor"
                         if (esCliente) {
-                            val formalizadosMinera = estado.todos.filter {
-                                it.equipo.cliente.nombre.contains("Minera", ignoreCase = true) &&
+                            // AHORA (Dinámico para cualquier cliente):
+                            val formalizadosCliente = estado.todos.filter {
+                                (it.equipo.cliente.nombre.contains(empresaUsuario, ignoreCase = true) ||
+                                        empresaUsuario.contains(it.equipo.cliente.nombre, ignoreCase = true)) &&
                                         it.estado == EstadoProtocolo.FORMALIZADO
                             }
+
 
                             IconButton(onClick = { mostrarBandejaNotificaciones = true }) {
                                 BadgedBox(
                                     badge = {
-                                        if (formalizadosMinera.isNotEmpty()) {
-                                            Badge { Text("${formalizadosMinera.size}") }
+                                        if (formalizadosCliente.isNotEmpty()) {
+                                            Badge { Text("${formalizadosCliente.size}") }
                                         }
                                     }
                                 ) {
@@ -266,7 +280,7 @@ fun InicioScreen(
                 if (rolUsuario != "Cliente supervisor") {
                     ExtendedFloatingActionButton(
                         onClick = onNuevoProtocolo,
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = NaranjaInduztek,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(16.dp)
                     ) {
@@ -282,11 +296,11 @@ fun InicioScreen(
                     .padding(innerPadding)
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                // RN-18 y RN-19: Filtrado de protocolos según el rol del usuario
-                val esCliente = rolUsuario == "Cliente supervisor"
+                val esCliente = rolUsuario == "Cliente supervisor" || rolUsuario.contains("CLIENTE", ignoreCase = true)
                 val listaAMostrar = if (esCliente) {
                     estado.visibles.filter {
-                        it.equipo.cliente.nombre.contains("Minera", ignoreCase = true) &&
+                        (it.equipo.cliente.nombre.contains(empresaUsuario, ignoreCase = true) ||
+                                empresaUsuario.contains(it.equipo.cliente.nombre, ignoreCase = true)) &&
                                 it.estado != EstadoProtocolo.BORRADOR
                     }
                 } else {
@@ -348,23 +362,26 @@ fun InicioScreen(
         }
     }
     if (mostrarBandejaNotificaciones) {
-        val formalizadosMinera = estado.todos.filter {
-            it.equipo.cliente.nombre.contains("Minera", ignoreCase = true) &&
+
+        val formalizadosCliente = estado.todos.filter {
+            (it.equipo.cliente.nombre.contains(empresaUsuario, ignoreCase = true) ||
+                    empresaUsuario.contains(it.equipo.cliente.nombre, ignoreCase = true)) &&
                     it.estado == EstadoProtocolo.FORMALIZADO
         }
+
 
         AlertDialog(
             onDismissRequest = { mostrarBandejaNotificaciones = false },
             title = { Text("Bandeja de Notificaciones") },
             text = {
-                if (formalizadosMinera.isEmpty()) {
+                if (formalizadosCliente.isEmpty()) {
                     Text("No tienes notificaciones pendientes.")
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(formalizadosMinera, key = { "notif_" + it.numero }) { p ->
+                        items(formalizadosCliente, key = { "notif_" + it.numero }) { p ->
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()

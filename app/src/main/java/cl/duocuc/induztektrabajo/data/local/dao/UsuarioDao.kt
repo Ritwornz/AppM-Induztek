@@ -16,6 +16,10 @@ interface UsuarioDao {
     @Query("SELECT * FROM usuarios WHERE id = :id")
     fun observarUsuarioPorId(id: Int): Flow<UsuarioEntity?>
 
+    @Query("SELECT * FROM usuarios LIMIT 2")
+    suspend fun obtenerUsuarios(): List<UsuarioEntity>
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarUsuario(usuario: UsuarioEntity): Long
 
@@ -24,4 +28,11 @@ interface UsuarioDao {
 
     @Query("UPDATE usuarios SET fotoBlob = :foto WHERE id = :id")
     suspend fun actualizarFoto(id: Int, foto: ByteArray?)
+
+    @Query("UPDATE usuarios SET nombreCompleto = :nuevoNombre WHERE correo = :correo")
+    suspend fun actualizarNombrePorCorreo(correo: String, nuevoNombre: String)
+
+    @Query("UPDATE usuarios SET passwordHash = :nuevoHash WHERE correo = :correo")
+    suspend fun actualizarPasswordPorCorreo(correo: String, nuevoHash: String)
+
 }
