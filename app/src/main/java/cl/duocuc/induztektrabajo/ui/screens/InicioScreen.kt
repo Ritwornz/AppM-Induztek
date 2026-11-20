@@ -81,6 +81,7 @@ fun InicioScreen(
     onEquipoElegido: (Equipo) -> Unit,
     onCerrarSesion: () -> Unit,
     onProtocoloElegido: (ProtocoloResumen) -> Unit,
+    onIrAGestionUsuarios: () -> Unit = {},
     modifier: Modifier = Modifier,
     onNavegarPerfil: () -> Unit = {},
     onNavegarDashboard: () -> Unit = {}
@@ -205,6 +206,21 @@ fun InicioScreen(
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
+                if (rolUsuario.equals("Administrador", ignoreCase = true)) {
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                        label = { Text("Gestión de Usuarios (Admin)") },
+                        selected = false,
+                        onClick = {
+                            scope.launch {
+                                drawerState.close()
+                                onIrAGestionUsuarios()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
+
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 

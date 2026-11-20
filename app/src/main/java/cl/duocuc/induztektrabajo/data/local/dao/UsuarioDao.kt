@@ -35,4 +35,14 @@ interface UsuarioDao {
     @Query("UPDATE usuarios SET passwordHash = :nuevoHash WHERE correo = :correo")
     suspend fun actualizarPasswordPorCorreo(correo: String, nuevoHash: String)
 
+    @Query("SELECT * FROM usuarios ORDER BY nombreCompleto ASC")
+    fun observarTodosLosUsuarios(): Flow<List<UsuarioEntity>>
+
+    @Query("UPDATE usuarios SET rol = :nuevoRol WHERE id = :id")
+    suspend fun actualizarRol(id: Int, nuevoRol: String)
+
+    @Query("DELETE FROM usuarios WHERE id = :id")
+    suspend fun eliminarUsuarioPorId(id: Int)
+
+
 }

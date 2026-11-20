@@ -35,6 +35,7 @@ private enum class Destino {
     REGISTRO,
     REGISTRO_USUARIO,
     RESUMEN,
+    ADMIN_USUARIOS,
     RECEPCION,
     PERFIL,
     DASHBOARD
@@ -78,6 +79,12 @@ fun InduztekApp() {
     val registroUsuarioViewModel = remember {
         cl.duocuc.induztektrabajo.viewmodel.RegistroUsuarioViewModel(db.usuarioDao())
     }
+    val adminUsuariosViewModel = remember {
+        cl.duocuc.induztektrabajo.viewmodel.AdminUsuariosViewModel(
+            usuarioDao = db.usuarioDao()
+        )
+    }
+
 
 
 
@@ -171,11 +178,16 @@ fun InduztekApp() {
             Destino.INICIO -> InicioScreen(
                 estado = estadoInicio,
                 nombreUsuario = datosUsuario?.nombre ?: "Carlos Sánchez",
-                rolUsuario = if (datosUsuario?.rol == "CLIENTE") "Cliente supervisor" else "Técnico de terreno",
+                rolUsuario = when (datosUsuario?.rol) {
+                    "ADMINISTRADOR" -> "Administrador"
+                    "CLIENTE" -> "Cliente supervisor"
+                    else -> "Técnico de terreno"
+                },
                 correoUsuario = datosUsuario?.correo ?: "carlos.sanchez@induztek.cl",
                 onBusquedaCambia = inicioViewModel::actualizarBusqueda,
                 onNavegarPerfil = { destino = Destino.PERFIL },
                 onNavegarDashboard = { destino = Destino.DASHBOARD },
+                onIrAGestionUsuarios = { destino = Destino.ADMIN_USUARIOS },
                 onNuevoProtocolo = inicioViewModel::abrirDialogoNuevo,
                 onCerrarDialogo = inicioViewModel::cerrarDialogoNuevo,
                 onEquipoElegido = inicioViewModel::crearProtocolo,
@@ -198,6 +210,8 @@ fun InduztekApp() {
                 },
                 modifier = Modifier.padding(innerPadding)
             )
+
+
 
             Destino.REGISTRO -> RegistroPruebasScreen(
                 estado = estadoRegistro,
@@ -334,7 +348,27 @@ fun InduztekApp() {
                     )
                 }
 
-                Destino.DASHBOARD -> {
+            Destino.ADMIN_USUARIOS -> {
+                val estadoAdmin by adminUsuariosViewModel.uiState.collectAsStateWithLifecycle()
+                cl.duocuc.induztektrabajo.ui.screens.AdminUsuariosScreen(
+                    estado = estadoAdmin,
+                    idUsuarioLogueado = datosUsuario?.id ?: -1,
+                    onBusquedaCambia = { adminUsuariosViewModel.onBusquedaCambia(it) },
+                    onCambiarRol = { usuario, nuevoRol ->
+                        adminUsuariosViewModel.cambiarRol(usuario, nuevoRol, datosUsuario?.id ?: -1)
+                    },
+                    onEliminarUsuario = { usuario ->
+                        adminUsuariosViewModel.eliminarUsuario(usuario, datosUsuario?.id ?: -1)
+                    },
+                    onLimpiarMensaje = { adminUsuariosViewModel.limpiarMensaje() },
+                    onVolver = { destino = Destino.INICIO },
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
+
+
+
+            Destino.DASHBOARD -> {
                     DashboardScreen(
                         protocolos = estadoInicio.todos,
                         rolUsuario = datosUsuario?.rol ?: "",
