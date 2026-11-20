@@ -61,7 +61,7 @@ abstract class InduztekDatabase : RoomDatabase() {
 
                 val hashComun = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92" // clave: 123456
 
-                // --- 1. USUARIOS SEMILLA (5 usuarios sin el campo 'empresa') ---
+                // --- 1. USUARIOS SEMILLA ---
                 val usuarios = listOf(
                     UsuarioEntity(
                         correo = "carlos.sanchez@induztek.cl",
@@ -149,21 +149,64 @@ abstract class InduztekDatabase : RoomDatabase() {
                         longitud = -70.9171
                     )
                 )
-
                 protocolos.forEach { protocoloDao.insertarProtocolo(it) }
 
-                // --- 3. MEDICIÓN PARA PUERTO AUSTRAL ---
-                medicionDao.insertarMedicion(
+                // --- 3. MEDICIONES SEMILLA VINCULADAS ---
+                val mediciones = listOf(
+                    // PT-2026-0001 (Minera Andes Norte - Registrado en terreno: 1 aprobada)
+                    MedicionEntity(
+                        protocoloNumero = "PT-2026-0001",
+                        tipoPrueba = "AISLAMIENTO_IP",
+                        valorA = 120.0,
+                        valorB = 250.0,
+                        resultado = "APROBADA",
+                        motivo = "Índice de polarización conforme a norma IEEE 43"
+                    ),
+
+                    // PT-2026-0002 (Celulosa del Sur - Formalizado: 2 de 2 aprobadas)
+                    MedicionEntity(
+                        protocoloNumero = "PT-2026-0002",
+                        tipoPrueba = "AISLAMIENTO_IP",
+                        valorA = 180.0,
+                        valorB = 400.0,
+                        resultado = "APROBADA",
+                        motivo = "Aislamiento en devanados dentro de rango óptimo"
+                    ),
+                    MedicionEntity(
+                        protocoloNumero = "PT-2026-0002",
+                        tipoPrueba = "RELACION_TTR",
+                        valorA = 13800.0,
+                        valorB = 400.0,
+                        resultado = "APROBADA",
+                        motivo = "Desviación de relación de transformación inferior al 0.3%"
+                    ),
+
+                    // PT-2026-0003: BORRADOR -> No tiene mediciones (queda vacío como corresponde)
+
+                    // PT-2026-0004 (Celulosa del Sur - Registrado en terreno: 1 aprobada)
+                    MedicionEntity(
+                        protocoloNumero = "PT-2026-0004",
+                        tipoPrueba = "RELACION_TTR",
+                        valorA = 4160.0,
+                        valorB = 380.0,
+                        resultado = "APROBADA",
+                        motivo = "Prueba de campo completada satisfactoriamente"
+                    ),
+
+                    // PT-2026-0005 (Puerto Austral - Registrado en terreno: 1 aprobada)
                     MedicionEntity(
                         protocoloNumero = "PT-2026-0005",
                         tipoPrueba = "AISLAMIENTO_IP",
                         valorA = 100.0,
                         valorB = 220.0,
                         resultado = "APROBADA",
-                        motivo = ""
+                        motivo = "Aislamiento verificado en terreno"
                     )
                 )
+
+                mediciones.forEach { medicionDao.insertarMedicion(it) }
             }
+
         }
     }
 }
