@@ -64,6 +64,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.width
 import cl.duocuc.induztektrabajo.ui.theme.NaranjaInduztek
 import kotlinx.coroutines.launch
 
@@ -84,7 +85,8 @@ fun InicioScreen(
     onIrAGestionUsuarios: () -> Unit = {},
     modifier: Modifier = Modifier,
     onNavegarPerfil: () -> Unit = {},
-    onNavegarDashboard: () -> Unit = {}
+    onNavegarDashboard: () -> Unit = {},
+    onReintentarClima: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -100,14 +102,13 @@ fun InicioScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                // Cabecera del Menú Lateral con datos del usuario
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(20.dp)
                 ) {
-                    // Círculo Avatar con iniciales
                     Box(
                         modifier = Modifier
                             .size(54.dp)
@@ -149,7 +150,6 @@ fun InicioScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Etiqueta de Rol
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
@@ -166,7 +166,6 @@ fun InicioScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Opción 1: Protocolos (Inicio)
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Assignment, contentDescription = null) },
                     label = { Text("Protocolos de prueba") },
@@ -179,7 +178,6 @@ fun InicioScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                // Opción 2: Mi Perfil
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("Mi Perfil") },
@@ -193,7 +191,6 @@ fun InicioScreen(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
 
-                // Opción 3: Métricas y Estadísticas
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Analytics, contentDescription = null) },
                     label = { Text("Métricas y Estadísticas") },
@@ -224,7 +221,6 @@ fun InicioScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                // Opción 4: Cerrar Sesión
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
                     label = { Text("Cerrar Sesión") },
@@ -261,12 +257,12 @@ fun InicioScreen(
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
-                    ), // 👈 1. Aquí va una COMA, no el paréntesis de cierre
+                    ),
                     actions = {
-                        // Solo el cliente supervisor ve la campana de notificaciones de protocolos formalizados
+
                         val esCliente = rolUsuario == "Cliente supervisor"
                         if (esCliente) {
-                            // AHORA (Dinámico para cualquier cliente):
+
                             val formalizadosCliente = estado.todos.filter {
                                 (it.equipo.cliente.nombre.contains(empresaUsuario, ignoreCase = true) ||
                                         empresaUsuario.contains(it.equipo.cliente.nombre, ignoreCase = true)) &&
@@ -342,6 +338,15 @@ fun InicioScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    if (!esCliente) {
+                        item {
+                            TarjetaClimaFaena(
+                                estado = estado.clima,
+                                onReintentar = onReintentarClima
+                            )
+                        }
+                    }
+
                     item {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             TarjetaMetrica("Total", totalMostrar, Modifier.weight(1f))
@@ -482,4 +487,110 @@ fun DialogoNuevoProtocolo(
         confirmButton = {},
         dismissButton = { TextButton(onClick = onCerrar) { Text("Cancelar") } }
     )
+}
+
+@Composable
+fun TarjetaClimaFaena(
+    estado: cl.duocuc.induztektrabajo.viewmodel.ClimaUiState,
+    onReintentar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Analytics,
+                        contentDescription = "Clima",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Condiciones Ambientales en Faena",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            when (estado) {
+                is cl.duocuc.induztektrabajo.viewmodel.ClimaUiState.Cargando -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("Consultando estación meteorológica...")
+                    }
+                }
+                is cl.duocuc.induztektrabajo.viewmodel.ClimaUiState.Exito -> {
+                    val clima = estado.clima
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Temperatura", style = MaterialTheme.typography.labelSmall)
+                            Text(
+                                "${clima.temperatura} °C",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Humedad Relativa", style = MaterialTheme.typography.labelSmall)
+                            Text(
+                                "${clima.humedad} %",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Viento", style = MaterialTheme.typography.labelSmall)
+                            Text(
+                                "${clima.velocidadViento} km/h",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Open-Meteo API en vivo • Base para corrección de aislamiento IEEE",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                is cl.duocuc.induztektrabajo.viewmodel.ClimaUiState.Error -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "No se pudo obtener el clima en faena",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        TextButton(onClick = onReintentar) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

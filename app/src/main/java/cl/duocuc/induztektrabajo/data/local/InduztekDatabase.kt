@@ -61,7 +61,6 @@ abstract class InduztekDatabase : RoomDatabase() {
 
                 val hashComun = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92" // clave: 123456
 
-                // --- 1. USUARIOS SEMILLA ---
                 val usuarios = listOf(
                     UsuarioEntity(
                         correo = "carlos.sanchez@induztek.cl",
@@ -96,7 +95,6 @@ abstract class InduztekDatabase : RoomDatabase() {
                 )
                 usuarios.forEach { usuarioDao.insertarUsuario(it) }
 
-                // --- 2. PROTOCOLOS SEMILLA ---
                 val protocolos = listOf(
                     ProtocoloEntity(
                         numero = "PT-2026-0001",
@@ -151,9 +149,7 @@ abstract class InduztekDatabase : RoomDatabase() {
                 )
                 protocolos.forEach { protocoloDao.insertarProtocolo(it) }
 
-                // --- 3. MEDICIONES SEMILLA VINCULADAS ---
                 val mediciones = listOf(
-                    // PT-2026-0001 (Minera Andes Norte - Registrado en terreno: 1 aprobada)
                     MedicionEntity(
                         protocoloNumero = "PT-2026-0001",
                         tipoPrueba = "AISLAMIENTO_IP",
@@ -163,7 +159,6 @@ abstract class InduztekDatabase : RoomDatabase() {
                         motivo = "Índice de polarización conforme a norma IEEE 43"
                     ),
 
-                    // PT-2026-0002 (Celulosa del Sur - Formalizado: 2 de 2 aprobadas)
                     MedicionEntity(
                         protocoloNumero = "PT-2026-0002",
                         tipoPrueba = "AISLAMIENTO_IP",
@@ -181,9 +176,7 @@ abstract class InduztekDatabase : RoomDatabase() {
                         motivo = "Desviación de relación de transformación inferior al 0.3%"
                     ),
 
-                    // PT-2026-0003: BORRADOR -> No tiene mediciones (queda vacío como corresponde)
 
-                    // PT-2026-0004 (Celulosa del Sur - Registrado en terreno: 1 aprobada)
                     MedicionEntity(
                         protocoloNumero = "PT-2026-0004",
                         tipoPrueba = "RELACION_TTR",
@@ -193,7 +186,6 @@ abstract class InduztekDatabase : RoomDatabase() {
                         motivo = "Prueba de campo completada satisfactoriamente"
                     ),
 
-                    // PT-2026-0005 (Puerto Austral - Registrado en terreno: 1 aprobada)
                     MedicionEntity(
                         protocoloNumero = "PT-2026-0005",
                         tipoPrueba = "AISLAMIENTO_IP",

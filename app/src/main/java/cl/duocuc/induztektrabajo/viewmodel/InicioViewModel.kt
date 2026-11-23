@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duocuc.induztektrabajo.data.local.dao.ProtocoloDao
 import cl.duocuc.induztektrabajo.data.local.entity.ProtocoloEntity
+import cl.duocuc.induztektrabajo.data.remote.ClimaActual
+import cl.duocuc.induztektrabajo.data.remote.RetrofitClimaClient
 import cl.duocuc.induztektrabajo.model.Equipo
 import cl.duocuc.induztektrabajo.model.EstadoProtocolo
 import cl.duocuc.induztektrabajo.model.ProtocoloResumen
@@ -22,12 +24,19 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+sealed interface ClimaUiState {
+    object Cargando : ClimaUiState
+    data class Exito(val clima: ClimaActual) : ClimaUiState
+    object Error : ClimaUiState
+}
+
 data class InicioUiState(
     val busqueda: String = "",
     val todos: List<ProtocoloResumen> = emptyList(),
     val equipos: List<Equipo> = emptyList(),
     val dialogoNuevoVisible: Boolean = false,
-    val mensaje: String? = null
+    val mensaje: String? = null,
+    val clima: ClimaUiState = ClimaUiState.Cargando
 ) {
     val visibles: List<ProtocoloResumen> get() = filtrarProtocolos(todos, busqueda)
     val borradores: Int get() = todos.count { it.estado == EstadoProtocolo.BORRADOR }
@@ -50,13 +59,29 @@ class InicioViewModel(
     init {
         // Carga inicial por defecto
         cargarProtocolos(rol = null, nombreCompleto = null)
+        cargarClimaFaena()
+    }
+
+    fun cargarClimaFaena() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(clima = ClimaUiState.Cargando) }
+            try {
+                val respuesta = RetrofitClimaClient.servicio.obtenerClimaFaena()
+                if (respuesta.isSuccessful && respuesta.body()?.actual != null) {
+                    _uiState.update { it.copy(clima = ClimaUiState.Exito(respuesta.body()!!.actual!!)) }
+                } else {
+                    _uiState.update { it.copy(clima = ClimaUiState.Error) }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(clima = ClimaUiState.Error) }
+            }
+        }
     }
 
     fun cargarProtocolos(rol: String?, nombreCompleto: String?) {
         jobObservador?.cancel()
         jobObservador = viewModelScope.launch {
             val flujo = if (rol == "CLIENTE" && !nombreCompleto.isNullOrBlank()) {
-                // Extrae la empresa dentro del paréntesis, ej: "Juan Pérez (Minera Andes Norte)" -> "Minera Andes Norte"
                 val empresa = if (nombreCompleto.contains("(") && nombreCompleto.contains(")")) {
                     nombreCompleto.substringAfter("(").substringBefore(")").trim()
                 } else {
@@ -64,7 +89,6 @@ class InicioViewModel(
                 }
                 protocoloDao.obtenerProtocolosPorCliente(empresa)
             } else {
-                // TÉCNICO y ADMINISTRADOR ven todos los protocolos
                 protocoloDao.obtenerTodosLosProtocolos()
             }
 

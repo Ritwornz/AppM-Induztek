@@ -59,23 +59,21 @@ dependencies {
     //Librerias nuevas
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
-
-    // NUEVO (Bloque 1): navegación entre pantallas (NavHost, NavController)
     implementation("androidx.navigation:navigation-compose:2.10.2")
 
-    // Room
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     ksp("androidx.room:room-compiler:2.7.2")
 
-    // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // GPS
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    // Iconos
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 
 }
