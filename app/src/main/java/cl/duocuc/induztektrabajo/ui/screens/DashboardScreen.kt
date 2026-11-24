@@ -54,10 +54,9 @@ import cl.duocuc.induztektrabajo.model.ProtocoloResumen
 @Composable
 fun DashboardScreen(
     protocolos: List<ProtocoloResumen>,
-    rolUsuario: String = "", // 👈 Agregado con valor por defecto
+    rolUsuario: String = "",
     onVolver: () -> Unit
 ) {
-    // Si es cliente, solo ve los de Minera y sin BORRADOR (RN-18 y RN-19)
     val esCliente = rolUsuario.contains("Cliente", ignoreCase = true)
 
 
@@ -70,7 +69,6 @@ fun DashboardScreen(
         protocolos
     }
 
-    // 1. Métricas calculadas sobre la lista filtrada
     val total = protocolosFiltrados.size
     val formalizados = protocolosFiltrados.count { it.estado == EstadoProtocolo.FORMALIZADO }
     val borradores = protocolosFiltrados.count { it.estado == EstadoProtocolo.BORRADOR }
@@ -85,7 +83,6 @@ fun DashboardScreen(
     } else 0f
 
 
-    // 2. Control de animación de entrada (gráfico y barras crecen al entrar)
     var animar by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         animar = true
@@ -103,10 +100,9 @@ fun DashboardScreen(
         label = "animacionBarra"
     )
 
-    // Colores temáticos para cada estado
-    val colorFormalizado = Color(0xFF2E7D32) // Verde oscuro
-    val colorBorrador = Color(0xFFE65100)    // Naranja Induztek
-    val colorRevision = Color(0xFF1976D2)    // Azul técnico
+    val colorFormalizado = Color(0xFF2E7D32)
+    val colorBorrador = Color(0xFFE65100)
+    val colorRevision = Color(0xFF1976D2)
 
     Scaffold(
         topBar = {
@@ -134,7 +130,6 @@ fun DashboardScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // TARJETA 1: Gráfico de dona animado con Canvas nativo
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
@@ -152,7 +147,6 @@ fun DashboardScreen(
                     )
                     Spacer(Modifier.height(16.dp))
 
-                    // DIBUJO CON CANVAS (Animación circular de dona)
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.size(190.dp)
@@ -161,19 +155,17 @@ fun DashboardScreen(
                             val strokeWidth = 28.dp.toPx()
 
                             if (total == 0) {
-                                // Círculo gris vacío si no hay datos
                                 drawCircle(
                                     color = Color.LightGray.copy(alpha = 0.3f),
                                     style = Stroke(strokeWidth)
                                 )
                             } else {
-                                var anguloInicio = -90f // Comienza arriba a las 12 en punto
+                                var anguloInicio = -90f
 
                                 val anguloFormalizados = (formalizados.toFloat() / total) * 360f * progresoAnimado
                                 val anguloBorradores = (borradores.toFloat() / total) * 360f * progresoAnimado
                                 val anguloRevision = (enRevision.toFloat() / total) * 360f * progresoAnimado
 
-                                // 1. Arco Formalizados
                                 if (anguloFormalizados > 0) {
                                     drawArc(
                                         color = colorFormalizado,
@@ -185,7 +177,6 @@ fun DashboardScreen(
                                     anguloInicio += (formalizados.toFloat() / total) * 360f
                                 }
 
-                                // 2. Arco Borradores
                                 if (anguloBorradores > 0) {
                                     drawArc(
                                         color = colorBorrador,
@@ -197,7 +188,6 @@ fun DashboardScreen(
                                     anguloInicio += (borradores.toFloat() / total) * 360f
                                 }
 
-                                // 3. Arco En revisión / Observados
                                 if (anguloRevision > 0) {
                                     drawArc(
                                         color = colorRevision,
@@ -210,7 +200,6 @@ fun DashboardScreen(
                             }
                         }
 
-                        // Texto central dentro de la dona
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = "$total",
@@ -228,7 +217,6 @@ fun DashboardScreen(
 
                     Spacer(Modifier.height(20.dp))
 
-                    // Leyenda de colores del gráfico
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -240,7 +228,6 @@ fun DashboardScreen(
                 }
             }
 
-            // TARJETA 2: Efectividad técnica (Barra de progreso animada)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -285,7 +272,6 @@ fun DashboardScreen(
                 }
             }
 
-            // TARJETA 3: Desglose rápido de protocolos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

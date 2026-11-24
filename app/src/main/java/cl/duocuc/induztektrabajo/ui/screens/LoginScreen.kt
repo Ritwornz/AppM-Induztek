@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cl.duocuc.induztektrabajo.R
+import androidx.compose.material3.Surface
 import cl.duocuc.induztektrabajo.viewmodel.LoginUiState
 
 @Composable
@@ -65,10 +66,13 @@ fun LoginScreen(
 ) {
     var mostrarDialogoRecuperacion by remember { mutableStateOf(false) }
     var correoRecuperacion by remember { mutableStateOf("") }
+    var codigoGenerado by remember { mutableStateOf("") }
+    var codigoIngresado by remember { mutableStateOf("") }
     var nuevaClaveRecuperacion by remember { mutableStateOf("") }
     var confirmarClaveRecuperacion by remember { mutableStateOf("") }
-    var pasoRecuperacion by remember { mutableStateOf(1) } // 1: Pedir correo, 2: Nueva clave
+    var pasoRecuperacion by remember { mutableStateOf(1) }
     var mensajeFeedback by remember { mutableStateOf<String?>(null) }
+
 
 
     Box(
@@ -241,52 +245,108 @@ fun LoginScreen(
             onDismissRequest = {
                 mostrarDialogoRecuperacion = false
                 pasoRecuperacion = 1
+                codigoIngresado = ""
+                nuevaClaveRecuperacion = ""
+                confirmarClaveRecuperacion = ""
                 mensajeFeedback = null
             },
             title = {
-                Text(if (pasoRecuperacion == 1) "Recuperar contraseña" else "Nueva contraseña")
+                Text(
+                    when (pasoRecuperacion) {
+                        1 -> "Recuperar contraseña"
+                        2 -> "Verificación de seguridad"
+                        else -> "Nueva contraseña"
+                    }
+                )
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    if (pasoRecuperacion == 1) {
-                        Text(
-                            "Ingresa tu correo institucional registrado para validar tu cuenta:",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        OutlinedTextField(
-                            value = correoRecuperacion,
-                            onValueChange = {
-                                correoRecuperacion = it
-                                mensajeFeedback = null
-                            },
-                            label = { Text("Correo institucional") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                    } else {
-                        Text(
-                            "Cuenta verificada para $correoRecuperacion. Ingresa tu nueva contraseña:",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        OutlinedTextField(
-                            value = nuevaClaveRecuperacion,
-                            onValueChange = { nuevaClaveRecuperacion = it },
-                            label = { Text("Nueva contraseña") },
-                            singleLine = true,
-                            visualTransformation = PasswordVisualTransformation(),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        OutlinedTextField(
-                            value = confirmarClaveRecuperacion,
-                            onValueChange = { confirmarClaveRecuperacion = it },
-                            label = { Text("Confirmar nueva contraseña") },
-                            singleLine = true,
-                            visualTransformation = PasswordVisualTransformation(),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(6.dp)
-                        )
+                    when (pasoRecuperacion) {
+                        1 -> {
+                            Text(
+                                "Ingresa tu correo institucional registrado para validar tu identidad:",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            OutlinedTextField(
+                                value = correoRecuperacion,
+                                onValueChange = {
+                                    correoRecuperacion = it
+                                    mensajeFeedback = null
+                                },
+                                label = { Text("Correo institucional") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                        }
+                        2 -> {
+                            Text(
+                                "Hemos generado un código de seguridad para tu cuenta ($correoRecuperacion):",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Código de seguridad OTP:",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Text(
+                                        text = codigoGenerado,
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = "Simulador corporativo Induztek",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                            OutlinedTextField(
+                                value = codigoIngresado,
+                                onValueChange = {
+                                    if (it.length <= 6) codigoIngresado = it
+                                    mensajeFeedback = null
+                                },
+                                label = { Text("Ingresa los 6 dígitos") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                        }
+                        3 -> {
+                            Text(
+                                "Identidad verificada exitosamente. Ingresa tu nueva contraseña para $correoRecuperacion:",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            OutlinedTextField(
+                                value = nuevaClaveRecuperacion,
+                                onValueChange = { nuevaClaveRecuperacion = it },
+                                label = { Text("Nueva contraseña") },
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            OutlinedTextField(
+                                value = confirmarClaveRecuperacion,
+                                onValueChange = { confirmarClaveRecuperacion = it },
+                                label = { Text("Confirmar nueva contraseña") },
+                                singleLine = true,
+                                visualTransformation = PasswordVisualTransformation(),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                        }
                     }
 
                     if (mensajeFeedback != null) {
@@ -305,34 +365,55 @@ fun LoginScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        if (pasoRecuperacion == 1) {
-                            if (correoRecuperacion.isBlank() || !correoRecuperacion.contains("@")) {
-                                mensajeFeedback = "Error: Ingrese un correo electrónico válido."
-                            } else {
-                                mensajeFeedback = null
-                                pasoRecuperacion = 2
+                        when (pasoRecuperacion) {
+                            1 -> {
+                                if (correoRecuperacion.isBlank() || !correoRecuperacion.contains("@")) {
+                                    mensajeFeedback = "Error: Ingrese un correo electrónico válido."
+                                } else {
+                                    val randomOtp = (100000..999999).random().toString()
+                                    codigoGenerado = randomOtp
+                                    codigoIngresado = ""
+                                    mensajeFeedback = null
+                                    pasoRecuperacion = 2
+                                }
                             }
-                        } else {
-                            if (nuevaClaveRecuperacion.length < 6) {
-                                mensajeFeedback = "Error: La contraseña debe tener al menos 6 caracteres."
-                            } else if (nuevaClaveRecuperacion != confirmarClaveRecuperacion) {
-                                mensajeFeedback = "Error: Las contraseñas no coinciden."
-                            } else {
-                                onConfirmarRecuperacion(correoRecuperacion, nuevaClaveRecuperacion) { exito, error ->
-                                    if (exito) {
-                                        mostrarDialogoRecuperacion = false
-                                        pasoRecuperacion = 1
-                                        nuevaClaveRecuperacion = ""
-                                        confirmarClaveRecuperacion = ""
-                                    } else {
-                                        mensajeFeedback = error ?: "Error al actualizar contraseña"
+                            2 -> {
+                                if (codigoIngresado.trim() != codigoGenerado) {
+                                    mensajeFeedback = "Error: Código de seguridad incorrecto."
+                                } else {
+                                    mensajeFeedback = null
+                                    pasoRecuperacion = 3
+                                }
+                            }
+                            3 -> {
+                                if (nuevaClaveRecuperacion.length < 6) {
+                                    mensajeFeedback = "Error: La contraseña debe tener al menos 6 caracteres."
+                                } else if (nuevaClaveRecuperacion != confirmarClaveRecuperacion) {
+                                    mensajeFeedback = "Error: Las contraseñas no coinciden."
+                                } else {
+                                    onConfirmarRecuperacion(correoRecuperacion, nuevaClaveRecuperacion) { exito, error ->
+                                        if (exito) {
+                                            mostrarDialogoRecuperacion = false
+                                            pasoRecuperacion = 1
+                                            codigoIngresado = ""
+                                            nuevaClaveRecuperacion = ""
+                                            confirmarClaveRecuperacion = ""
+                                        } else {
+                                            mensajeFeedback = error ?: "Error al actualizar contraseña"
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 ) {
-                    Text(if (pasoRecuperacion == 1) "Continuar" else "Restablecer")
+                    Text(
+                        when (pasoRecuperacion) {
+                            1 -> "Enviar código"
+                            2 -> "Verificar código"
+                            else -> "Restablecer"
+                        }
+                    )
                 }
             },
             dismissButton = {
@@ -340,6 +421,7 @@ fun LoginScreen(
                     onClick = {
                         mostrarDialogoRecuperacion = false
                         pasoRecuperacion = 1
+                        codigoIngresado = ""
                         mensajeFeedback = null
                     }
                 ) {
@@ -348,6 +430,7 @@ fun LoginScreen(
             }
         )
     }
+
 }
 
 @Composable

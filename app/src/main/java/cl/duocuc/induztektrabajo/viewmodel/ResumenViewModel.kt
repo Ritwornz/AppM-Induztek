@@ -61,7 +61,6 @@ class ResumenViewModel(
         val recepcion = recepciones[protocolo.numero]
         val actual = _uiState.value
 
-        // PRESERVA la foto y los campos del formulario si la app se suspende por la cámara:
         _uiState.value = ResumenUiState(
             protocolo = protocolo,
             pruebas = emptyList(),
@@ -70,10 +69,9 @@ class ResumenViewModel(
             nombreReceptor = actual.nombreReceptor,
             rutReceptor = actual.rutReceptor,
             cargo = actual.cargo,
-            fotoEvidencia = actual.fotoEvidencia // 👈 No borra la foto capturada
+            fotoEvidencia = actual.fotoEvidencia
         )
 
-        // 1. Cargar coordenadas GPS persistidas en Room para este protocolo
         viewModelScope.launch {
             val entidad = protocoloDao.obtenerProtocoloPorNumero(protocolo.numero)
             if (entidad != null && entidad.latitud != null && entidad.longitud != null) {
@@ -87,7 +85,6 @@ class ResumenViewModel(
             }
         }
 
-        // 2. Observar mediciones reactivamente desde Room
         jobObservadorMediciones?.cancel()
         jobObservadorMediciones = viewModelScope.launch {
             medicionDao.obtenerMedicionesPorProtocolo(protocolo.numero).collectLatest { entidades ->
@@ -198,7 +195,6 @@ class ResumenViewModel(
         )
         recepciones[protocolo.numero] = acta
 
-        // Persiste en Room SQLite cambiando el estado a FORMALIZADO
         viewModelScope.launch {
             protocoloDao.actualizarProtocolo(
                 ProtocoloEntity(
@@ -217,7 +213,7 @@ class ResumenViewModel(
 
         _uiState.update {
             it.copy(
-                protocolo = protocolo.copy(estado = EstadoProtocolo.FORMALIZADO), // 👈 AGREGA ESTA LÍNEA
+                protocolo = protocolo.copy(estado = EstadoProtocolo.FORMALIZADO),
                 recepcion = acta,
                 errorRecepcion = null,
                 nombreReceptor = "",

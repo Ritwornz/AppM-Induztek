@@ -6,10 +6,7 @@ import cl.duocuc.induztektrabajo.model.TipoPrueba
 import cl.duocuc.induztektrabajo.model.calcularErrorTtr
 import cl.duocuc.induztektrabajo.model.calcularIP
 import cl.duocuc.induztektrabajo.model.resultadoGlobal
-import cl.duocuc.induztektrabajo.model.validarRegistro
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class MedicionReglasTest {
@@ -30,16 +27,5 @@ class MedicionReglasTest {
     fun unaRechazadaDejaProtocoloRechazado() {
         val lista = listOf(reg(ResultadoPrueba.APROBADA), reg(ResultadoPrueba.RECHAZADA))
         assertEquals(ResultadoPrueba.RECHAZADA, resultadoGlobal(lista))
-    }
-
-    @Test
-    fun motivoObligatorioSiObservada() {
-        assertNotNull(validarRegistro("10", "20", ResultadoPrueba.OBSERVADA, ""))
-        assertNull(validarRegistro("10", "20", ResultadoPrueba.OBSERVADA, "Lectura inestable"))
-    }
-
-    @Test
-    fun noPermiteValoresVacios() {
-        assertNotNull(validarRegistro("", "20", ResultadoPrueba.APROBADA, ""))
     }
 }

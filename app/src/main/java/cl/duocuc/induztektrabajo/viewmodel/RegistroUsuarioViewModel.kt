@@ -1,9 +1,12 @@
 package cl.duocuc.induztektrabajo.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duocuc.induztektrabajo.data.local.dao.UsuarioDao
 import cl.duocuc.induztektrabajo.data.local.entity.UsuarioEntity
+import cl.duocuc.induztektrabajo.data.remote.CrearUsuarioRemotoRequest
+import cl.duocuc.induztektrabajo.data.remote.InduztekBackendClient
 import cl.duocuc.induztektrabajo.data.security.PasswordHasher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +18,7 @@ data class RegistroUsuarioUiState(
     val nombre: String = "",
     val empresa: String = "",
     val correo: String = "",
-    val rol: String = "TECNICO", // "TECNICO" o "CLIENTE"
+    val rol: String = "TECNICO",
     val password: String = "",
     val confirmarPassword: String = "",
     val passwordVisible: Boolean = false,
@@ -42,7 +45,6 @@ class RegistroUsuarioViewModel(
     fun registrarUsuario(onExito: () -> Unit) {
         val s = _uiState.value
 
-        // 1. Validaciones
         if (s.nombre.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Ingresa tu nombre completo") }
             return
@@ -64,7 +66,6 @@ class RegistroUsuarioViewModel(
             return
         }
 
-        // 2. Proceso en SQLite
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true, mensajeError = null) }
             try {
@@ -79,7 +80,6 @@ class RegistroUsuarioViewModel(
                     return@launch
                 }
 
-                // Convención de nombre: "Nombre (Empresa)" para el filtro dinámico
                 val nombreConEmpresa = "${s.nombre.trim()} (${s.empresa.trim()})"
                 val hash = PasswordHasher.hashPassword(s.password)
 
@@ -91,6 +91,25 @@ class RegistroUsuarioViewModel(
                 )
 
                 usuarioDao.insertarUsuario(nuevoUsuario)
+                try {
+                    val respuestaRemota = InduztekBackendClient.servicio.crearUsuario(
+                        CrearUsuarioRemotoRequest(
+                            nombre = s.nombre.trim(),
+                            correo = s.correo,
+                            password = s.password,
+                            rol = s.rol,
+                            empresa = s.empresa.trim()
+                        )
+                    )
+                    if (respuestaRemota.isSuccessful) {
+                        Log.d("INDUZTEK_BACKEND", "Usuario sincronizado exitosamente con MySQL. ID: ${respuestaRemota.body()?.id}")
+                    } else {
+                        Log.w("INDUZTEK_BACKEND", "Aviso: Backend respondió código HTTP ${respuestaRemota.code()}")
+                    }
+                } catch (eRemote: Exception) {
+                    Log.w("INDUZTEK_BACKEND", "No se pudo conectar con el microservicio: ${eRemote.message}")
+                }
+
 
                 _uiState.update { it.copy(cargando = false, registroExitoso = true) }
                 onExito()

@@ -75,7 +75,6 @@ fun RegistroUsuarioScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Subtítulo explicativo
             Text(
                 text = "Regístrate en Induztek para acceder a los protocolos de prueba eléctrica.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -84,7 +83,6 @@ fun RegistroUsuarioScreen(
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
-            // Selector de Rol (Técnico / Cliente)
             Text(
                 text = "Tipo de perfil",
                 style = MaterialTheme.typography.labelLarge,
@@ -114,7 +112,6 @@ fun RegistroUsuarioScreen(
                 )
             }
 
-            // Campo Nombre Completo
             OutlinedTextField(
                 value = state.nombre,
                 onValueChange = viewModel::onNombreChange,
@@ -134,7 +131,6 @@ fun RegistroUsuarioScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo Empresa / Faena
             OutlinedTextField(
                 value = state.empresa,
                 onValueChange = viewModel::onEmpresaChange,
@@ -156,7 +152,6 @@ fun RegistroUsuarioScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo Correo Corporativo
             OutlinedTextField(
                 value = state.correo,
                 onValueChange = viewModel::onCorreoChange,
@@ -177,7 +172,6 @@ fun RegistroUsuarioScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo Contraseña
             OutlinedTextField(
                 value = state.password,
                 onValueChange = viewModel::onPasswordChange,
@@ -206,7 +200,6 @@ fun RegistroUsuarioScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo Confirmar Contraseña
             OutlinedTextField(
                 value = state.confirmarPassword,
                 onValueChange = viewModel::onConfirmarPasswordChange,
@@ -230,7 +223,6 @@ fun RegistroUsuarioScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Tarjeta de Error
             AnimatedVisibility(visible = state.mensajeError != null) {
                 Card(
                     colors = CardDefaults.cardColors(
@@ -250,7 +242,6 @@ fun RegistroUsuarioScreen(
                 }
             }
 
-            // Botón Registrarse
             Button(
                 onClick = {
                     focusManager.clearFocus()
@@ -279,7 +270,6 @@ fun RegistroUsuarioScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Enlace para volver si ya tiene cuenta
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 8.dp)

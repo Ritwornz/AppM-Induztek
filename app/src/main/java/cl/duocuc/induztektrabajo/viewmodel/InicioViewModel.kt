@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import cl.duocuc.induztektrabajo.data.local.dao.ProtocoloDao
 import cl.duocuc.induztektrabajo.data.local.entity.ProtocoloEntity
 import cl.duocuc.induztektrabajo.data.remote.ClimaActual
+import cl.duocuc.induztektrabajo.data.remote.InduztekBackendClient
 import cl.duocuc.induztektrabajo.data.remote.RetrofitClimaClient
 import cl.duocuc.induztektrabajo.model.Equipo
 import cl.duocuc.induztektrabajo.model.EstadoProtocolo
@@ -18,6 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import cl.duocuc.induztektrabajo.data.remote.ProtocoloRemotoDto
+import android.util.Log
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -57,7 +61,6 @@ class InicioViewModel(
     private var jobObservador: Job? = null
 
     init {
-        // Carga inicial por defecto
         cargarProtocolos(rol = null, nombreCompleto = null)
         cargarClimaFaena()
     }
@@ -118,6 +121,74 @@ class InicioViewModel(
         }
     }
 
+    fun sincronizarConBackend() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(mensaje = "Sincronizando con Docker Gateway...") }
+            try {
+                Log.d("INDUZTEK_DEBUG", "Llamando a Gateway /api/protocolos...")
+                val respuesta = InduztekBackendClient.servicio.obtenerProtocolos()
+
+                if (respuesta.isSuccessful) {
+                    val listaRemota = respuesta.body().orEmpty()
+                    Log.d("INDUZTEK_DEBUG", "Recibidos ${listaRemota.size} protocolos desde backend")
+
+                    val protocolosLocales = protocoloDao.obtenerTodosLosProtocolos().first()
+                    val numerosLocales = protocolosLocales.map { it.numero }.toSet()
+
+                    var nuevosInsertados = 0
+                    for (remoto in listaRemota) {
+                        val num = remoto.numero
+                        if (!numerosLocales.contains(num)) {
+                            val tag = when {
+                                num.contains("0001") -> "TR-01"
+                                num.contains("0002") -> "TR-02"
+                                num.contains("0003") -> "TR-03"
+                                num.contains("0004") -> "SW-01"
+                                else -> "GEN-01"
+                            }
+                            val estadoStr = when (remoto.estado?.uppercase()) {
+                                "FORMALIZADO" -> "FORMALIZADO"
+                                "EN_PROCESO", "EN_TERRENO" -> "EN_PROCESO"
+                                else -> "BORRADOR"
+                            }
+                            val nuevo = ProtocoloEntity(
+                                numero = num,
+                                tagEquipo = tag,
+                                clienteNombre = "Enel Distribución",
+                                estado = estadoStr,
+                                pruebasAprobadas = if (estadoStr == "FORMALIZADO") 3 else 1,
+                                pruebasTotales = 3,
+                                latitud = -33.4489,
+                                longitud = -70.6693
+                            )
+                            protocoloDao.insertarProtocolo(nuevo)
+                            nuevosInsertados++
+                        }
+                    }
+
+                    _uiState.update {
+                        it.copy(
+                            mensaje = if (nuevosInsertados > 0) {
+                                "Sincronizado: $nuevosInsertados nuevos desde Gateway"
+                            } else {
+                                "Al día: Los ${listaRemota.size} protocolos ya están en el teléfono"
+                            }
+                        )
+                    }
+                } else {
+                    val errCode = "Error Gateway HTTP ${respuesta.code()}"
+                    Log.e("INDUZTEK_DEBUG", errCode)
+                    _uiState.update { it.copy(mensaje = errCode) }
+                }
+            } catch (e: Exception) {
+                Log.e("INDUZTEK_DEBUG", "Fallo al sincronizar", e)
+                _uiState.update { it.copy(mensaje = "Error: ${e::class.simpleName}: ${e.message}") }
+            }
+        }
+    }
+
+
+
     fun actualizarBusqueda(texto: String) = _uiState.update { it.copy(busqueda = texto) }
 
     fun abrirDialogoNuevo() = _uiState.update { it.copy(dialogoNuevoVisible = true) }
@@ -140,9 +211,27 @@ class InicioViewModel(
                 fechaRegistro = System.currentTimeMillis()
             )
             protocoloDao.insertarProtocolo(nuevaEntidad)
-            _uiState.update { it.copy(dialogoNuevoVisible = false, mensaje = "Protocolo $numero creado para ${equipo.tag}") }
+            _uiState.update { it.copy(dialogoNuevoVisible = false, mensaje = "Protocolo $numero creado") }
+
+            try {
+                val requestRemoto = ProtocoloRemotoDto(
+                    codigoProtocolo = numero,
+                    clienteId = 3L,
+                    tecnicoId = 2L,
+                    estado = "BORRADOR",
+                    resultado = "PENDIENTE",
+                    observaciones = "Creado desde la app móvil para ${equipo.tag}"
+                )
+                val respuesta = InduztekBackendClient.servicio.crearProtocolo(requestRemoto)
+                if (respuesta.isSuccessful) {
+                    _uiState.update { it.copy(mensaje = "Protocolo $numero sincronizado con Docker") }
+                }
+            } catch (e: Exception) {
+                android.util.Log.w("INDUZTEK_BACKEND", "No se pudo sincronizar protocolo remoto: ${e.message}")
+            }
         }
     }
+
 
     fun actualizarAvance(numero: String, aprobadas: Int, total: Int, nuevoEstado: EstadoProtocolo) {
         viewModelScope.launch {

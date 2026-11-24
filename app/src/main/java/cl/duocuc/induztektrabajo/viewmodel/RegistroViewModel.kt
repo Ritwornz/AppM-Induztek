@@ -9,6 +9,8 @@ import cl.duocuc.induztektrabajo.model.RegistroPrueba
 import cl.duocuc.induztektrabajo.model.ResultadoPrueba
 import cl.duocuc.induztektrabajo.model.TipoPrueba
 import cl.duocuc.induztektrabajo.model.resultadoGlobal
+import cl.duocuc.induztektrabajo.data.remote.InduztekBackendClient
+import cl.duocuc.induztektrabajo.data.remote.MedicionRemotaDto
 import cl.duocuc.induztektrabajo.model.validarRegistro
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -164,6 +166,7 @@ class RegistroViewModel(
         val estado = _uiState.value
         val protocolo = estado.protocolo ?: return
 
+
         val valorADouble = estado.valorA.replace(',', '.').toDoubleOrNull()
         val valorBDouble = estado.valorB.replace(',', '.').toDoubleOrNull()
 
@@ -193,6 +196,25 @@ class RegistroViewModel(
             )
 
             medicionDao.insertarMedicion(nuevaMedicion)
+            try {
+                val protoId = protocolo.numero.substringAfterLast("-").toLongOrNull() ?: 1L
+                val tipoRemoto = if (estado.tipo == TipoPrueba.TTR) "RESISTENCIA_TTR" else "AISLAMIENTO_IP"
+                val unidad = if (estado.tipo == TipoPrueba.TTR) "Ω" else "MΩ"
+                val cumple = estado.resultado == ResultadoPrueba.APROBADA
+
+                val medicionRemota = MedicionRemotaDto(
+                    protocoloId = protoId,
+                    tipoPrueba = tipoRemoto,
+                    parametro = "Fase Medida (${protocolo.equipo.tag})",
+                    valorMedido = valorADouble,
+                    unidadMedida = unidad,
+                    cumpleNorma = cumple
+                )
+                InduztekBackendClient.servicio.crearMedicion(medicionRemota)
+            } catch (e: Exception) {
+                android.util.Log.w("INDUZTEK_BACKEND", "Error al enviar medición remota: ${e.message}")
+            }
+
 
             _uiState.update {
                 it.copy(

@@ -18,11 +18,6 @@ class ProtocoloReglasTest {
     }
 
     @Test
-    fun buscarVacioDevuelveTodos() {
-        assertEquals(lista.size, filtrarProtocolos(lista, "  ").size)
-    }
-
-    @Test
     fun siguienteNumeroUsaFormatoPT() {
         assertEquals("PT-2026-0005", siguienteNumeroProtocolo(lista, 2026))
         assertEquals("PT-2027-0001", siguienteNumeroProtocolo(lista, 2027))

@@ -36,11 +36,9 @@ fun AdminUsuariosScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Diálogos de interacción
     var usuarioParaEditarRol by remember { mutableStateOf<UsuarioEntity?>(null) }
     var usuarioParaEliminar by remember { mutableStateOf<UsuarioEntity?>(null) }
 
-    // Disparar Snackbar ante mensajes de éxito o error del ViewModel
     LaunchedEffect(estado.mensajeFeedback) {
         estado.mensajeFeedback?.let { mensaje ->
             snackbarHostState.showSnackbar(
@@ -86,7 +84,6 @@ fun AdminUsuariosScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value = estado.busqueda,
                 onValueChange = onBusquedaCambia,
@@ -101,7 +98,6 @@ fun AdminUsuariosScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Lista reactiva de usuarios
             if (estado.usuarios.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -133,7 +129,6 @@ fun AdminUsuariosScreen(
         }
     }
 
-    // Diálogo para Cambiar Rol
     usuarioParaEditarRol?.let { usuario ->
         DialogoCambiarRol(
             usuario = usuario,
@@ -146,7 +141,6 @@ fun AdminUsuariosScreen(
         )
     }
 
-    // Diálogo de confirmación para Eliminar Usuario
     usuarioParaEliminar?.let { usuario ->
         AlertDialog(
             onDismissRequest = { usuarioParaEliminar = null },
@@ -223,7 +217,6 @@ private fun TarjetaUsuarioAdmin(
                 BadgeRol(rol = usuario.rol)
             }
 
-            // Acciones: Editar Rol y Eliminar
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onEditarRolClick) {
                     Icon(

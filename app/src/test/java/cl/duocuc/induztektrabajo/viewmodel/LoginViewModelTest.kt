@@ -5,16 +5,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-
 class LoginViewModelTest {
 
     @Test
     fun validar_correoCorporativoValido_devuelveTrue() {
-
         val correo = "tecnico@induztek.cl"
-
         val resultado = LoginValidator.correoEsValido(correo)
-
         assertTrue(resultado)
     }
 

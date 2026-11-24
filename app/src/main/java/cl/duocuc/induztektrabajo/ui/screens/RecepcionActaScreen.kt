@@ -56,7 +56,6 @@ fun RecepcionActaScreen(
         SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
     }
 
-    // Campos del formulario con persistencia ante recreación de Activity
     var nombreLocal by rememberSaveable { mutableStateOf(estado.nombreReceptor) }
     var rutLocal by rememberSaveable { mutableStateOf(estado.rutReceptor) }
     var cargoLocal by rememberSaveable { mutableStateOf(estado.cargo) }
@@ -65,20 +64,17 @@ fun RecepcionActaScreen(
     }
     var mensajePermisoDenegado by rememberSaveable { mutableStateOf(false) }
 
-    // Foto local en pantalla
     var fotoLocal by remember { mutableStateOf<Bitmap?>(estado.fotoEvidencia) }
     val fotoFinal = fotoLocal ?: estado.fotoEvidencia
 
 
 
-    // Sincroniza fecha inicial al ViewModel una vez
     LaunchedEffect(Unit) {
         if (estado.fechaRecepcion.isBlank()) {
             onFecha(fechaPorDefecto)
         }
     }
 
-    // Launcher de cámara robusto para Xiaomi / Android
     val launcherCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -93,7 +89,6 @@ fun RecepcionActaScreen(
         }
     }
 
-    // Launcher del permiso de cámara
     val launcherPermiso = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { concedido ->
@@ -117,7 +112,6 @@ fun RecepcionActaScreen(
         }
     }
 
-    // Validaciones
     val rutValido = validarRutChileno(rutLocal)
     val rutError = rutLocal.isNotBlank() && !rutValido
     val tieneFoto = fotoFinal != null
@@ -148,7 +142,6 @@ fun RecepcionActaScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Tarjeta de información del protocolo
             val protocolo = estado.protocolo
             Card(
                 colors = CardDefaults.cardColors(
@@ -170,7 +163,6 @@ fun RecepcionActaScreen(
                 }
             }
 
-            // Nombre
             OutlinedTextField(
                 value = nombreLocal,
                 onValueChange = {
@@ -182,7 +174,6 @@ fun RecepcionActaScreen(
                 singleLine = true
             )
 
-            // RUT
             OutlinedTextField(
                 value = rutLocal,
                 onValueChange = {
@@ -200,7 +191,6 @@ fun RecepcionActaScreen(
                 singleLine = true
             )
 
-            // Cargo
             OutlinedTextField(
                 value = cargoLocal,
                 onValueChange = {
@@ -212,7 +202,6 @@ fun RecepcionActaScreen(
                 singleLine = true
             )
 
-            // Fecha
             OutlinedTextField(
                 value = fechaLocal,
                 onValueChange = {
@@ -224,7 +213,6 @@ fun RecepcionActaScreen(
                 singleLine = true
             )
 
-            // Tarjeta de la Cámara
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -312,7 +300,6 @@ fun RecepcionActaScreen(
                 }
             }
 
-            // Botón de guardar y formalizar
             Button(
                 onClick = {
                     fotoFinal?.let { onFotoCapturada(it) }

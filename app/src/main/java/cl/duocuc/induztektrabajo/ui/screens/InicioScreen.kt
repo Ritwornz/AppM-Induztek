@@ -64,6 +64,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import cl.duocuc.induztektrabajo.data.remote.InduztekBackendClient
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.foundation.layout.width
 import cl.duocuc.induztektrabajo.ui.theme.NaranjaInduztek
 import kotlinx.coroutines.launch
@@ -86,11 +94,23 @@ fun InicioScreen(
     modifier: Modifier = Modifier,
     onNavegarPerfil: () -> Unit = {},
     onNavegarDashboard: () -> Unit = {},
-    onReintentarClima: () -> Unit = {}
+    onReintentarClima: () -> Unit = {},
+    onSincronizarBackend: () -> Unit = {},
+    onLimpiarMensaje: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(estado.mensaje) {
+        estado.mensaje?.let { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            onLimpiarMensaje()
+        }
+    }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var mostrarBandejaNotificaciones by remember { mutableStateOf(false) }
+    var mostrarDialogoIp by remember { mutableStateOf(false) }
+    var ipTexto by remember { mutableStateOf(InduztekBackendClient.obtenerIp(context)) }
 
     val empresaUsuario = if (nombreUsuario.contains("(") && nombreUsuario.contains(")")) {
         nombreUsuario.substringAfter("(").substringBefore(")").trim()
@@ -259,16 +279,30 @@ fun InicioScreen(
                         containerColor = MaterialTheme.colorScheme.background
                     ),
                     actions = {
+                        IconButton(onClick = {
+                            ipTexto = InduztekBackendClient.obtenerIp(context)
+                            mostrarDialogoIp = true
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Configurar IP del Servidor"
+                            )
+                        }
+
+                        IconButton(onClick = onSincronizarBackend) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Sincronizar con Docker Gateway"
+                            )
+                        }
 
                         val esCliente = rolUsuario == "Cliente supervisor"
                         if (esCliente) {
-
                             val formalizadosCliente = estado.todos.filter {
                                 (it.equipo.cliente.nombre.contains(empresaUsuario, ignoreCase = true) ||
                                         empresaUsuario.contains(it.equipo.cliente.nombre, ignoreCase = true)) &&
                                         it.estado == EstadoProtocolo.FORMALIZADO
                             }
-
 
                             IconButton(onClick = { mostrarBandejaNotificaciones = true }) {
                                 BadgedBox(
@@ -445,11 +479,55 @@ fun InicioScreen(
             }
         )
     }
-
-
     if (estado.dialogoNuevoVisible) {
         DialogoNuevoProtocolo(estado.equipos, onEquipoElegido, onCerrarDialogo)
     }
+
+    if (mostrarDialogoIp) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoIp = false },
+            title = { Text("Configuración de Servidor Backend") },
+            text = {
+                Column {
+                    Text(
+                        text = "Ingresa la IP del computador donde está corriendo Docker (puerto 8081):",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = ipTexto,
+                        onValueChange = { ipTexto = it },
+                        label = { Text("Dirección IP o Host") },
+                        placeholder = { Text("ej: 192.168.1.89 o localhost") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        InduztekBackendClient.actualizarIp(context, ipTexto)
+                        Toast.makeText(
+                            context,
+                            "Servidor configurado en: ${InduztekBackendClient.obtenerIp(context)}:8081",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        mostrarDialogoIp = false
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogoIp = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+
 }
 
 @Composable
@@ -487,6 +565,8 @@ fun DialogoNuevoProtocolo(
         confirmButton = {},
         dismissButton = { TextButton(onClick = onCerrar) { Text("Cancelar") } }
     )
+
+
 }
 
 @Composable

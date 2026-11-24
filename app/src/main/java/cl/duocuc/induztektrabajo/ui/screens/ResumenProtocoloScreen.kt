@@ -165,7 +165,6 @@ fun ResumenProtocoloScreen(
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    // Comprueba si está en memoria o si ya fue FORMALIZADO en Room
                     val yaFormalizado = estado.recepcion != null || estado.protocolo?.estado == EstadoProtocolo.FORMALIZADO
 
                     if (yaFormalizado) {
@@ -233,7 +232,6 @@ fun ResumenProtocoloScreen(
                         Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
 
-                    // Solo el técnico en terreno puede registrar la ubicación GPS
                     if (!esCliente) {
                         OutlinedButton(
                             onClick = {

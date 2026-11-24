@@ -26,7 +26,6 @@ class AdminUsuariosViewModel(
     private val _mensajeFeedback = MutableStateFlow<String?>(null)
     private val _esErrorFeedback = MutableStateFlow(false)
 
-    // Combina el flujo de usuarios de Room con el texto de búsqueda
     val uiState: StateFlow<AdminUsuariosUiState> = combine(
         usuarioDao.observarTodosLosUsuarios(),
         _busqueda,

@@ -68,7 +68,6 @@ fun PerfilScreen(
     var campoNuevaClave by remember { mutableStateOf("") }
     var campoConfirmarClave by remember { mutableStateOf("") }
 
-    // Archivo de foto persistente según correo
     val archivoFoto = remember(correoUsuario) {
         val nombreArchivo = "foto_perfil_" + correoUsuario.replace("@", "_").replace(".", "_") + ".jpg"
         File(context.filesDir, nombreArchivo)
@@ -159,7 +158,6 @@ fun PerfilScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Avatar Circular con botón de cámara
             Box(
                 modifier = Modifier
                     .size(130.dp)
@@ -214,7 +212,6 @@ fun PerfilScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Tarjeta de Datos
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -231,7 +228,6 @@ fun PerfilScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botones de Personalización
             OutlinedButton(
                 onClick = {
                     campoNuevoNombre = nombreEstado
@@ -271,7 +267,6 @@ fun PerfilScreen(
         }
     }
 
-    // Diálogo Origen Foto
     if (mostrarDialogoOrigen) {
         AlertDialog(
             onDismissRequest = { mostrarDialogoOrigen = false },
@@ -300,7 +295,6 @@ fun PerfilScreen(
         )
     }
 
-    // Diálogo Editar Nombre
     if (mostrarDialogoNombre) {
         AlertDialog(
             onDismissRequest = { mostrarDialogoNombre = false },
@@ -343,7 +337,6 @@ fun PerfilScreen(
         )
     }
 
-    // Diálogo Cambiar Contraseña
     if (mostrarDialogoPassword) {
         AlertDialog(
             onDismissRequest = { mostrarDialogoPassword = false },

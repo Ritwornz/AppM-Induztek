@@ -191,7 +191,10 @@ fun InduztekApp() {
                 onNuevoProtocolo = inicioViewModel::abrirDialogoNuevo,
                 onCerrarDialogo = inicioViewModel::cerrarDialogoNuevo,
                 onEquipoElegido = inicioViewModel::crearProtocolo,
-                onCerrarSesion = {
+                onSincronizarBackend = { inicioViewModel.sincronizarConBackend() },
+                onLimpiarMensaje = { inicioViewModel.limpiarMensaje() },
+
+                        onCerrarSesion = {
                     scope.launch {
                         sesionStore.cerrarSesion()
                         protocoloActualNumero = null

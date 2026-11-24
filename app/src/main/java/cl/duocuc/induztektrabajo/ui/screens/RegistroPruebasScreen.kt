@@ -69,7 +69,6 @@ fun RegistroPruebasScreen(
     val context = LocalContext.current
     val p = estado.protocolo
 
-    // Si Xiaomi suspende la memoria momentáneamente, NO expulsamos con onVolver()
     if (p == null) {
         Box(
             modifier = modifier.fillMaxSize(),
@@ -106,14 +105,12 @@ fun RegistroPruebasScreen(
 
 
 
-    // Estado local para la foto del instrumento y control de permisos
     var fotoPruebaLocal by remember { mutableStateOf<Bitmap?>(null) }
     var intentosPermisoCamara by rememberSaveable { mutableIntStateOf(0) }
     var mostrarDialogoPermisoExplicacion by rememberSaveable { mutableStateOf(false) }
     var mostrarDialogoIrAjustes by rememberSaveable { mutableStateOf(false) }
     var mostrarAdvertenciaSinFoto by rememberSaveable { mutableStateOf(false) }
 
-    // Sincroniza al ViewModel si cambia el valor
     fun actualizarA(nuevo: String) {
         valorALocal = nuevo
         onValorA(nuevo)
@@ -129,7 +126,6 @@ fun RegistroPruebasScreen(
         onMotivo(nuevo)
     }
 
-    // Lanzador para tomar foto de la prueba
     val launcherCamaraPrueba = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -138,7 +134,6 @@ fun RegistroPruebasScreen(
         }
     }
 
-    // Lanzador del permiso de cámara
     val launcherPermisoCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { concedido ->
@@ -185,7 +180,6 @@ fun RegistroPruebasScreen(
     ) {
         item { BotonVolverFlecha(onClick = onVolver, descripcion = "Volver al inicio") }
 
-        // Cabecera del protocolo
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -277,7 +271,6 @@ fun RegistroPruebasScreen(
             }
         }
 
-        // Evidencia fotográfica de la prueba
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -338,7 +331,6 @@ fun RegistroPruebasScreen(
             }
         }
 
-        // Botón Guardar prueba
         item {
             Button(
                 onClick = {
@@ -365,7 +357,6 @@ fun RegistroPruebasScreen(
 
         }
 
-        // Pruebas ya registradas
         if (estado.registros.isNotEmpty()) {
             item { Text("Pruebas registradas", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
             items(estado.registros) { TarjetaRegistro(it) }
@@ -377,7 +368,6 @@ fun RegistroPruebasScreen(
         }
     }
 
-    // Diálogos de advertencia y permisos
     if (mostrarAdvertenciaSinFoto) {
         AlertDialog(
             onDismissRequest = { mostrarAdvertenciaSinFoto = false },

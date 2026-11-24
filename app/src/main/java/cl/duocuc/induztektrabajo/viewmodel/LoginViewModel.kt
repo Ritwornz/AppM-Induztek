@@ -88,6 +88,7 @@ class LoginViewModel(
             }
         }
     }
+
     suspend fun restablecerContrasena(
         correo: String,
         nuevaClave: String
@@ -105,5 +106,4 @@ class LoginViewModel(
             Result.failure(Exception("Error al actualizar la contraseña: ${e.message}"))
         }
     }
-
 }
